@@ -6,8 +6,8 @@ Quick Setup
 -----------
 
 1. Open a second terminal window and start a local Redis server (if you are on Linux or Mac, execute `run-redis.sh` to install and launch a private copy).
-2. Start a Celery worker: `celery worker -A  --loglevel=info`.
-3. Start the Flask application on your original terminal window: `celery worker -A event.event_bus --loglevel=info`.
+2. Start a Celery worker: `celery worker -A event.event_bus --loglevel=info`.
+3. Start the Flask application on your original terminal window: `python app.py [<port numeber>]`.
 4. Go to `http://localhost:5001/` and refer to end-points in app.py. Enjoy this application!
 
 How to develop

@@ -1,7 +1,7 @@
 import os
 import sys
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_mail import Mail
 
 from service.arithm_producer import sub
@@ -23,12 +23,10 @@ app.config['MAIL_DEFAULT_SENDER'] = 'flask@example.com'
 mail = Mail(app)
 
 
-@app.route('/arithm/add', methods=['GET'])
+@app.route('/arithm/add', methods=['POST'])
 def compute_add():
-    # serializable
-    # add.apply_async([direct_hub], serializer='pickle')
-    # add()
-    add.apply_async()
+    content = request.get_json()
+    add.apply_async([content['a'], content['b']])
     return jsonify({'code': 0}), 202
 
 

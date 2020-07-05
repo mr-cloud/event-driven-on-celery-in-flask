@@ -5,7 +5,8 @@ from event.event_bus import direct_hub, celery
 
 
 @celery.task
-def add():
+def add(a: int, b: int):
+    """Never read/write on global vars cause newly booted worker would lost it."""
     print('Async task triggered ...')
-    time.sleep(3)
-    direct_hub.publish(EVENT_ARITHM_ADD, {'res': 2})
+    time.sleep(1)
+    direct_hub.publish(EVENT_ARITHM_ADD, {'res': a+b})

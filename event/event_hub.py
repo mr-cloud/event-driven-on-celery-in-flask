@@ -16,12 +16,14 @@ class ETransport(object):
 
 class EventHub:
     """
-    :param topic: routing key
+    :param app: engine like celery instance
+    :param transport: exchange type
+    :param rkey: routing key
     """
-    def __init__(self, app, channel: str, transport: str, topic: str) -> None:
-        self.topic = topic
+    def __init__(self, app, exchange: str, transport: str, rkey: str) -> None:
+        self.rkey = rkey
         self.transport = transport
-        self.channel = channel
+        self.exchange = exchange
         self.app = app
         self.handlers = []
         self._bootstrap()
@@ -42,9 +44,10 @@ class EventHub:
         try:
             with self.app.producer_pool.acquire(block=True) as producer:
                 producer.publish(MsgEvent(uuid.uuid4().hex, mtype, msg),
-                                 exchange=self.channel,
-                                 routing_key=self.topic,
-                                 serializer='pickle'
+                                 exchange=self.exchange,
+                                 routing_key=self.rkey,
+                                 serializer='pickle',
+                                 retry=True
                                  )
             return True
         except Exception as e:
@@ -54,7 +57,7 @@ class EventHub:
     def _bootstrap(self):
         with self.app.pool.acquire(block=True) as conn:
             exchange = kombu.Exchange(
-                name=self.channel,
+                name=self.exchange,
                 type=self.transport,
                 durable=True,
                 channel=conn,
@@ -65,7 +68,7 @@ class EventHub:
             queue = kombu.Queue(
                 name=q,
                 exchange=exchange,
-                routing_key=self.topic,
+                routing_key=self.rkey,
                 channel=conn,
                 message_ttl=600,
                 queue_arguments={

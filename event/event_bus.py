@@ -21,7 +21,7 @@ print(ext_path)
 sys.path.extend(ext_path)
 celery.autodiscover_tasks(packages=['task.arithm'])
 
-direct_hub = EventHub(celery, 'async-channel', ETransport.DIRECT, 'p2p-routing')
+direct_hub = EventHub(celery, 'event-driven', ETransport.DIRECT, 'p2p-routing')
 
 
 def event_handler(ttype: ETransport = ETransport.DIRECT):
