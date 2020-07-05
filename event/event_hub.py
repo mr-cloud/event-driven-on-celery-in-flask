@@ -29,6 +29,7 @@ class EventHub:
         self._bootstrap()
         
     def _handle(self, event: MsgEvent):
+        print('#handlers=%d' % len(self.handlers))
         for h in self.handlers:
             h(event)
     

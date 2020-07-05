@@ -4,7 +4,6 @@ import sys
 
 from celery import Celery
 
-from event import direct_event_handlers
 from event.event_hub import EventHub, ETransport
 
 
@@ -16,10 +15,13 @@ config = dict(
 celery = Celery('event bus', broker=config['CELERY_BROKER_URL'])
 celery.conf.update(config)
 
-ext_path = [os.path.dirname(os.path.dirname(os.path.abspath(__file__))), os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'task')]
+ext_path = [os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'task'),
+            os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'ehandler')]
 print(ext_path)
 sys.path.extend(ext_path)
 celery.autodiscover_tasks(packages=['task.arithm'])
+celery.autodiscover_tasks(packages=['ehandler.arithm'], related_name='handlers')
 
 direct_hub = EventHub(celery, 'event-driven', ETransport.DIRECT, 'p2p-routing')
 
@@ -32,7 +34,3 @@ def event_handler(ttype: ETransport = ETransport.DIRECT):
         return func
     return h
 
-
-direct_handlers = [fn for name, fn in inspect.getmembers(direct_event_handlers, inspect.isfunction)]
-for h in direct_handlers:
-    direct_hub.register_handler(h)
