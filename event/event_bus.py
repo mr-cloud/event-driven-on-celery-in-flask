@@ -23,14 +23,19 @@ sys.path.extend(ext_path)
 celery.autodiscover_tasks(packages=['task.arithm'])
 celery.autodiscover_tasks(packages=['ehandler.arithm'], related_name='handlers')
 
+# P2P Load Balancing Event Hub.
 direct_hub = EventHub(celery, 'event-driven', ETransport.DIRECT, 'p2p-routing')
 
 
-def event_handler(ttype: ETransport = ETransport.DIRECT):
+def event_handler(etype: str, ttype: ETransport = ETransport.DIRECT):
+    """
+    :param etype: event type
+    :param ttype: transport type
+    """
     def h(func):
         print('Registering event handler: %s::%s' % (func.__module__, func.__name__))
         if ttype == ETransport.DIRECT:
-            direct_hub.register_handler(func)
+            direct_hub.register_handler(etype, func)
         return func
     return h
 

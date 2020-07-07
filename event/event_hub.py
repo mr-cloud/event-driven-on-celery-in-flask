@@ -1,7 +1,7 @@
 
 # named_tuple
 import uuid
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from typing import Callable
 
 import kombu
@@ -25,16 +25,16 @@ class EventHub:
         self.transport = transport
         self.exchange = exchange
         self.app = app
-        self.handlers = []
+        self.handlers = defaultdict(list)   # event-type -> handlers
         self._bootstrap()
         
     def _handle(self, event: MsgEvent):
-        print('#handlers=%d' % len(self.handlers))
-        for h in self.handlers:
+        print('#handlers# %s' % [(k, len(v)) for k, v in self.handlers.items()])
+        for h in self.handlers.get(event.type):
             h(event)
     
-    def register_handler(self, h: Callable):
-        self.handlers.append(h)
+    def register_handler(self, etype:str, h: Callable):
+        self.handlers[etype].append(h)
 
     def publish(self, mtype: str, msg: str) -> bool:
         """

@@ -9,4 +9,6 @@ def add(a: int, b: int):
     """Never read/write on global vars cause newly booted worker would lost it."""
     print('Async task triggered ...')
     time.sleep(1)
-    direct_hub.publish(EVENT_ARITHM_ADD, {'res': a+b})
+    if not direct_hub.publish(EVENT_ARITHM_ADD, {'res': a+b}):
+        print('Cannot publish event!!!')
+

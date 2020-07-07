@@ -8,5 +8,6 @@ def sub():
     global cnt
     print('Send sub event ...')
     cnt -= 1
-    direct_hub.publish(EVENT_ARITHM_SUB, {'res': cnt})
+    if not direct_hub.publish(EVENT_ARITHM_SUB, {'res': cnt}):
+        print('Cannot publish event!!!')
     return cnt
