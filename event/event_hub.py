@@ -1,5 +1,3 @@
-
-# named_tuple
 import uuid
 from collections import namedtuple, defaultdict
 from typing import Callable
