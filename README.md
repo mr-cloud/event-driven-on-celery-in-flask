@@ -12,14 +12,13 @@ Quick Setup
 
 How to develop
 --------------
-- Async task. `task/arithm/tasks.py::add` for async-task and producer. `add()` should be decorated by `@celery.task` 
-    and called with `apply_async()`. `ehandler/arithm/handlers.py::handle_add_result` for consumer. 
-    New directory for async-task should be created under `task` and name must named as `tasks.py`, 
-    then added into `event/event_bus.py` via `celery.autodiscover_tasks`. 
-- Event publish and consuming. `service/arithm_producer.py::sub` for producer .`ehandler/arithm/handlers.py::handle_sub_result` for consumer.
-     `handle_sub_result` just needs to be decorated by `@event_handler()` and it will be registered automatically.
-    New directory for handler should be created under `ehandler` and name must named as `handlers.py`, 
-    then added into `event/event_bus.py` via `celery.autodiscover_tasks`.
+- Async task. `task/arithm/tasks.py::add_async` for async-task and producer. `add_async()` should be decorated by `@celery.task` 
+    and called with `apply_async()` or `delay()`. `ehandler/arithm/handlers.py::handle_add_result` handle the produced event. 
+    New async. task should be created under `task` and name must named as `tasks.py`, 
+    then added into scanned packages via `add_async.py:celery.autodiscover_tasks`. 
+- Event publish and consuming. `service/arithm_producer.py::sub` for producer .`ehandler/arithm/handlers.py::handle_sub_result` for the produced event.
+     `handle_sub_result` just needs to be decorated by `@register()` and it will be registered automatically.
+    New handler should be created under `ehandler`.
     
  
 Reference

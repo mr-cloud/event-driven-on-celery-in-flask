@@ -1,11 +1,12 @@
 import time
 
+from celery_setup import celery
 from const.event_consts import EVENT_ARITHM_ADD
-from event.event_bus import direct_hub, celery
+from event_bus import direct_hub
 
 
 @celery.task
-def add(a: int, b: int):
+def add_async(a: int, b: int):
     """Never read/write on global vars cause newly booted worker would lost it."""
     print('Async task triggered ...')
     time.sleep(1)
